@@ -16,34 +16,43 @@ import org.apache.log4j.Logger;
  */
 public class Init {
 
-    static API api = null;
-    private static final Logger log = Logger.getLogger(Init.class);
+	static API api = null;
+	private static final Logger log = Logger.getLogger(Init.class);
+	public static pt.ua.fairdata.fairdatapoint.service.FairMetaDataService fairMetaDataService = new pt.ua.fairdata.fairdatapoint.service.impl.FairMetaDataServiceImpl();
 
-    public static API getAPI() {
-        if (api == null) {
-            api = new API();
-        }
-        return api;
-    }
+	public static API getAPI() {
+		if (api == null) {
+			api = new API();
+			try {
+				String fdpUrl = "http://localhost/scaleus/api/v1/fair/fdp";
+				nl.dtl.fairmetadata4j.model.FDPMetadata metadata = pt.ua.fairdata.fairdatapoint.utils.FDPUtils
+						.getDefaultFDPMetadata(fdpUrl);
+				Init.fairMetaDataService.storeFDPMetaData(metadata);
+			} catch (Exception ex) {
+				log.error(ex.getMessage());
+			}
+		}
+		return api;
+	}
 
-    public static void dataImport(String database, String location) {
-        try {
-            File file = new File(location);
-            if (file.isDirectory()) {
-                String[] list = Utils.getFolderContentList(file.getAbsolutePath());
-                for (String l : list) {
-                    File f= new File(location + "/" + l);
-                    log.debug("Importing: " + f.getAbsolutePath());
-                    Path input = Paths.get(f.getAbsolutePath());
-                    getAPI().read(database, input.toUri().toString());
-                }
-            } else {
-                log.debug("Importing: " + file.getAbsolutePath());
-                getAPI().read(database, file.getAbsolutePath());
-            }
-        } catch (Exception e) {
-            log.error("Data import failed", e);
-        }
+	public static void dataImport(String database, String location) {
+		try {
+			File file = new File(location);
+			if (file.isDirectory()) {
+				String[] list = Utils.getFolderContentList(file.getAbsolutePath());
+				for (String l : list) {
+					File f = new File(location + "/" + l);
+					log.debug("Importing: " + f.getAbsolutePath());
+					Path input = Paths.get(f.getAbsolutePath());
+					getAPI().read(database, input.toUri().toString());
+				}
+			} else {
+				log.debug("Importing: " + file.getAbsolutePath());
+				getAPI().read(database, file.getAbsolutePath());
+			}
+		} catch (Exception e) {
+			log.error("Data import failed", e);
+		}
 
-    }
+	}
 }

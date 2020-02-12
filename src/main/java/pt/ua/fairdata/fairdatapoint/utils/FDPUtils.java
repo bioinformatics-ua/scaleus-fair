@@ -159,9 +159,9 @@ public class FDPUtils {
 		nl.dtl.fairmetadata4j.model.FDPMetadata metadata = new nl.dtl.fairmetadata4j.model.FDPMetadata();
 		metadata.setUri(valueFactory.createIRI(url));
 		metadata.setTitle(
-				valueFactory.createLiteral(("FDP of " + host), org.eclipse.rdf4j.model.vocabulary.XMLSchema.STRING));
+				valueFactory.createLiteral(("FDP of " + host), org.eclipse.rdf4j.model.vocabulary.XMLSchema.STRING)); // Required: Name of the repository with the language tag
 		metadata.setDescription(
-				valueFactory.createLiteral(("FDP of " + host), org.eclipse.rdf4j.model.vocabulary.XMLSchema.STRING));
+				valueFactory.createLiteral(("FDP of " + host), org.eclipse.rdf4j.model.vocabulary.XMLSchema.STRING)); // Optional: Description of the repository with the language tag
 		metadata.setLanguage(valueFactory.createIRI("http://id.loc.gov/vocabulary/iso639-1/en"));
 		metadata.setLicense(valueFactory.createIRI("http://rdflicense.appspot.com/rdflicense/cc-by-nc-nd3.0"));
 		metadata.setVersion(valueFactory.createLiteral("1.0", org.eclipse.rdf4j.model.vocabulary.XMLSchema.FLOAT));
