@@ -18,14 +18,14 @@ public class Init {
 
 	static API api = null;
 	private static final Logger log = Logger.getLogger(Init.class);
-	public static pt.ua.fairdata.fairdatapoint.service.FairMetaDataService fairMetaDataService = new pt.ua.fairdata.fairdatapoint.service.impl.FairMetaDataServiceImpl();
+	public static pt.ua.fairdata.fairdatapoint.service.FairMetaDataService fairMetaDataService = new pt.ua.fairdata.fairdatapoint.service.FairMetaDataServiceImpl();
 
 	public static API getAPI() {
 		if (api == null) {
 			api = new API();
 			try {
 				String fdpUrl = "http://localhost/scaleus/api/v1/fair/fdp";
-				nl.dtl.fairmetadata4j.model.FDPMetadata metadata = pt.ua.fairdata.fairdatapoint.utils.FDPUtils
+				pt.ua.fairdata.fairmetadata4j.model.FDPMetadata metadata = pt.ua.fairdata.fairdatapoint.utils.FDPUtils
 						.getDefaultFDPMetadata(fdpUrl);
 				Init.fairMetaDataService.storeFDPMetaData(metadata);
 			} catch (Exception ex) {

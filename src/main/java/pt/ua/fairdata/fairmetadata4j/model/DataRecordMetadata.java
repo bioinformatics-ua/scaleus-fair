@@ -21,12 +21,48 @@
  * THE SOFTWARE.
  */
 
-package pt.ua.fairdata.fairdatapoint.service;
+package pt.ua.fairdata.fairmetadata4j.model;
 
-public class FairMetadataServiceException extends Exception {
-	private static final long serialVersionUID = 1L;
+import org.eclipse.rdf4j.model.IRI;
+import org.eclipse.rdf4j.model.Literal;
 
-	public FairMetadataServiceException(String msg) {
-		super(msg);
+// Data record metadata object
+public class DataRecordMetadata extends Metadata {
+
+	private IRI rmlURI;
+	private IRI distributionURI;
+	private Literal dataRecordIssued;
+	private Literal dataRecordModified;
+
+	public IRI getRmlURI() {
+		return rmlURI;
+	}
+
+	public void setRmlURI(IRI rmlURI) {
+		this.rmlURI = rmlURI;
+	}
+
+	public IRI getDistributionURI() {
+		return distributionURI;
+	}
+
+	public void setDistributionURI(IRI distributionURI) {
+		this.distributionURI = distributionURI;
+	}
+
+	public Literal getDataRecordIssued() {
+		return dataRecordIssued;
+	}
+
+	public void setDataRecordIssued(Literal dataRecordIssued) {
+		this.dataRecordIssued = dataRecordIssued;
+	}
+
+	public Literal getDataRecordModified() {
+		return dataRecordModified;
+	}
+
+	public void setDataRecordModified(Literal dataRecordModified) {
+		this.dataRecordModified = dataRecordModified;
 	}
 }

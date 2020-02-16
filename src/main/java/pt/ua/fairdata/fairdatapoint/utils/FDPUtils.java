@@ -23,17 +23,44 @@
 
 package pt.ua.fairdata.fairdatapoint.utils;
 
-/**
- * Contains references to the example metadata rdf files which are used in the
- * Junit tests.
- * 
- * @author Rajaram Kaliyaperumal <rr.kaliyaperumal@gmail.com>
- * @author Kees Burger <kees.burger@dtls.nl>
- * @since 2016-08-10
- * @version 0.1
- */
+import java.io.IOException;
+import java.io.StringReader;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.nio.file.Paths;
+import java.util.Iterator;
+import java.util.List;
+import javax.servlet.http.HttpServletRequest;
+import org.apache.log4j.Logger;
+import org.eclipse.rdf4j.model.Model;
+import org.eclipse.rdf4j.model.Statement;
+import org.eclipse.rdf4j.model.ValueFactory;
+import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
+import org.eclipse.rdf4j.model.vocabulary.XMLSchema;
+import org.eclipse.rdf4j.rio.RDFFormat;
+import org.eclipse.rdf4j.rio.RDFParseException;
+import org.eclipse.rdf4j.rio.Rio;
+import org.eclipse.rdf4j.rio.UnsupportedRDFormatException;
+import com.google.common.base.Charsets;
+import com.google.common.collect.Lists;
+import com.google.common.io.Resources;
+import pt.ua.fairdata.fairdatapoint.service.FairMetaDataService;
+import pt.ua.fairdata.fairdatapoint.service.FairMetadataServiceException;
+import pt.ua.fairdata.fairmetadata4j.io.CatalogMetadataParser;
+import pt.ua.fairdata.fairmetadata4j.io.DatasetMetadataParser;
+import pt.ua.fairdata.fairmetadata4j.io.DistributionMetadataParser;
+import pt.ua.fairdata.fairmetadata4j.io.FDPMetadataParser;
+import pt.ua.fairdata.fairmetadata4j.io.MetadataException;
+import pt.ua.fairdata.fairmetadata4j.io.MetadataParserException;
+import pt.ua.fairdata.fairmetadata4j.model.CatalogMetadata;
+import pt.ua.fairdata.fairmetadata4j.model.DistributionMetadata;
+import pt.ua.fairdata.fairmetadata4j.model.FDPMetadata;
+import pt.ua.fairdata.fairmetadata4j.model.Identifier;
+import pt.ua.fairdata.fairmetadata4j.utils.MetadataParserUtils;
+import pt.ua.fairdata.fairmetadata4j.utils.vocabulary.DataCite;
+
 public class FDPUtils {
-	private static final org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(FDPUtils.class);
+	private static final Logger log = Logger.getLogger(FDPUtils.class);
 	public static final String FDP_METADATA_FILE = "dtl-fdp.ttl";
 	public static final String CATALOG_METADATA_FILE = "textmining-catalog.ttl";
 	public static final String CATALOG_ID = "textmining";
@@ -47,154 +74,108 @@ public class FDPUtils {
 	public final static String DISTRIBUTION_URI = "http://localhost/fdp/textmining/gene-disease-association_lumc/sparql";
 	public final static String BASE_URI = "http://localhost/";
 	public static final String VALID_TEST_FILE = "valid-test-file.ttl";
-	public static final org.eclipse.rdf4j.rio.RDFFormat FILE_FORMAT = org.eclipse.rdf4j.rio.RDFFormat.TURTLE;
+	public static final RDFFormat FILE_FORMAT = RDFFormat.TURTLE;
 
-	/**
-	 * Method to read the content of a turtle file
-	 * 
-	 * @param fileName Turtle file name
-	 * @return File content as a string
-	 */
+	// Read a turtle file and return the content as a string
 	public static String getFileContentAsString(String fileName) {
 		String content = "";
 		try {
-			java.net.URL fileURL = java.nio.file.Paths.get(fileName).toUri().toURL();
-			content = com.google.common.io.Resources.toString(fileURL, com.google.common.base.Charsets.UTF_8);
-		} catch (java.io.IOException ex) {
+			URL fileURL = Paths.get(fileName).toUri().toURL();
+			content = Resources.toString(fileURL, Charsets.UTF_8);
+		} catch (IOException ex) {
 			log.error("Error getting turle file", ex);
 		}
 		return content;
 	}
 
-	/**
-	 * Method to read the content of a turtle file
-	 * 
-	 * @param fileName Turtle file name
-	 * @param baseURI
-	 * @return File content as a string
-	 */
-	public static java.util.List<org.eclipse.rdf4j.model.Statement> getFileContentAsStatements(String fileName,
-			String baseURI) {
-		java.util.List<org.eclipse.rdf4j.model.Statement> statements = null;
+	// Read a turtle file and return the content as a list of statements
+	public static List<Statement> getFileContentAsStatements(String fileName, String baseURI) {
+		List<Statement> statements = null;
 		try {
 			String content = getFileContentAsString(fileName);
-			java.io.StringReader reader = new java.io.StringReader(content);
-			org.eclipse.rdf4j.model.Model model;
-			model = org.eclipse.rdf4j.rio.Rio.parse(reader, baseURI, FILE_FORMAT);
-			java.util.Iterator<org.eclipse.rdf4j.model.Statement> it = model.iterator();
-			statements = com.google.common.collect.Lists.newArrayList(it);
-		} catch (java.io.IOException | org.eclipse.rdf4j.rio.RDFParseException
-				| org.eclipse.rdf4j.rio.UnsupportedRDFormatException ex) {
+			StringReader reader = new StringReader(content);
+			Model model;
+			model = Rio.parse(reader, baseURI, FILE_FORMAT);
+			Iterator<Statement> it = model.iterator();
+			statements = Lists.newArrayList(it);
+		} catch (IOException | RDFParseException | UnsupportedRDFormatException ex) {
 			log.error("Error getting turle file", ex);
 		}
 		return statements;
 	}
 
-	public static nl.dtl.fairmetadata4j.model.FDPMetadata getFDPMetadata(String uri) {
-		nl.dtl.fairmetadata4j.io.FDPMetadataParser parser = nl.dtl.fairmetadata4j.utils.MetadataParserUtils
-				.getFdpParser();
-		org.eclipse.rdf4j.model.ValueFactory f = org.eclipse.rdf4j.model.impl.SimpleValueFactory.getInstance();
-		nl.dtl.fairmetadata4j.model.FDPMetadata metadata = parser
-				.parse(getFileContentAsStatements(FDP_METADATA_FILE, uri), f.createIRI(uri));
+	public static FDPMetadata getFDPMetadata(String uri) {
+		FDPMetadataParser parser = MetadataParserUtils.getFdpParser();
+		ValueFactory f = SimpleValueFactory.getInstance();
+		FDPMetadata metadata = parser.parse(getFileContentAsStatements(FDP_METADATA_FILE, uri), f.createIRI(uri));
 		return metadata;
 	}
 
-	public static nl.dtl.fairmetadata4j.model.CatalogMetadata getCatalogMetadata(String uri, String parentURI) {
-		nl.dtl.fairmetadata4j.io.CatalogMetadataParser parser = nl.dtl.fairmetadata4j.utils.MetadataParserUtils
-				.getCatalogParser();
-		org.eclipse.rdf4j.model.ValueFactory f = org.eclipse.rdf4j.model.impl.SimpleValueFactory.getInstance();
-		nl.dtl.fairmetadata4j.model.CatalogMetadata metadata = parser
-				.parse(getFileContentAsStatements(CATALOG_METADATA_FILE, uri), f.createIRI(uri));
+	public static CatalogMetadata getCatalogMetadata(String uri, String parentURI) {
+		CatalogMetadataParser parser = MetadataParserUtils.getCatalogParser();
+		ValueFactory f = SimpleValueFactory.getInstance();
+		CatalogMetadata metadata = parser.parse(getFileContentAsStatements(CATALOG_METADATA_FILE, uri),
+				f.createIRI(uri));
 		metadata.setParentURI(f.createIRI(parentURI));
 		return metadata;
 	}
 
-	public static nl.dtl.fairmetadata4j.model.DatasetMetadata getDatasetMetadata(String uri, String parentURI) {
-		nl.dtl.fairmetadata4j.io.DatasetMetadataParser parser = nl.dtl.fairmetadata4j.utils.MetadataParserUtils
-				.getDatasetParser();
-		org.eclipse.rdf4j.model.ValueFactory f = org.eclipse.rdf4j.model.impl.SimpleValueFactory.getInstance();
-		nl.dtl.fairmetadata4j.model.DatasetMetadata metadata = parser
+	public static pt.ua.fairdata.fairmetadata4j.model.DatasetMetadata getDatasetMetadata(String uri, String parentURI) {
+		DatasetMetadataParser parser = MetadataParserUtils.getDatasetParser();
+		ValueFactory f = SimpleValueFactory.getInstance();
+		pt.ua.fairdata.fairmetadata4j.model.DatasetMetadata metadata = parser
 				.parse(getFileContentAsStatements(DATASET_METADATA_FILE, uri), f.createIRI(uri));
 		metadata.setParentURI(f.createIRI(parentURI));
 		return metadata;
 	}
 
-	public static nl.dtl.fairmetadata4j.model.DistributionMetadata getDistributionMetadata(String uri,
-			String parentURI) {
-		nl.dtl.fairmetadata4j.io.DistributionMetadataParser parser = nl.dtl.fairmetadata4j.utils.MetadataParserUtils
-				.getDistributionParser();
-		org.eclipse.rdf4j.model.ValueFactory f = org.eclipse.rdf4j.model.impl.SimpleValueFactory.getInstance();
-		nl.dtl.fairmetadata4j.model.DistributionMetadata metadata = parser
-				.parse(getFileContentAsStatements(DISTRIBUTION_METADATA_FILE, uri), f.createIRI(uri));
+	public static DistributionMetadata getDistributionMetadata(String uri, String parentURI) {
+		DistributionMetadataParser parser = MetadataParserUtils.getDistributionParser();
+		ValueFactory f = SimpleValueFactory.getInstance();
+		DistributionMetadata metadata = parser.parse(getFileContentAsStatements(DISTRIBUTION_METADATA_FILE, uri),
+				f.createIRI(uri));
 		metadata.setParentURI(f.createIRI(parentURI));
 		return metadata;
 	}
 
-	/**
-	 * Create and store generic FDP metadata
-	 *
-	 * @param request HttpServletRequest
-	 * @throws MetadataParserException
-	 */
-	public static void storeDefaultFDPMetadata(String fdpUrl,
-			pt.ua.fairdata.fairdatapoint.service.FairMetaDataService fairMetaDataService)
-			throws nl.dtl.fairmetadata4j.io.MetadataParserException, java.net.MalformedURLException,
-			nl.dtl.fairmetadata4j.io.MetadataException,
-			pt.ua.fairdata.fairdatapoint.service.FairMetadataServiceException {
-		nl.dtl.fairmetadata4j.model.FDPMetadata metadata = FDPUtils.getDefaultFDPMetadata(fdpUrl);
+	public static void storeDefaultFDPMetadata(String fdpUrl, FairMetaDataService fairMetaDataService)
+			throws MetadataParserException, MalformedURLException, MetadataException, FairMetadataServiceException {
+		FDPMetadata metadata = FDPUtils.getDefaultFDPMetadata(fdpUrl);
 		fairMetaDataService.storeFDPMetaData(metadata);
 	}
 
-	/**
-	 * Create and store generic FDP metadata
-	 *
-	 * @param request HttpServletRequest
-	 * @throws MetadataParserException
-	 */
-	public static nl.dtl.fairmetadata4j.model.FDPMetadata getDefaultFDPMetadata(String url)
-			throws java.net.MalformedURLException {
-		org.eclipse.rdf4j.model.ValueFactory valueFactory = org.eclipse.rdf4j.model.impl.SimpleValueFactory
-				.getInstance();
-		String host = new java.net.URL(url).getAuthority();
-		nl.dtl.fairmetadata4j.model.FDPMetadata metadata = new nl.dtl.fairmetadata4j.model.FDPMetadata();
+	public static FDPMetadata getDefaultFDPMetadata(String url) throws MalformedURLException {
+		ValueFactory valueFactory = SimpleValueFactory.getInstance();
+		String host = new URL(url).getAuthority();
+		FDPMetadata metadata = new FDPMetadata();
 		metadata.setUri(valueFactory.createIRI(url));
-		metadata.setTitle(
-				valueFactory.createLiteral(("FDP of " + host), org.eclipse.rdf4j.model.vocabulary.XMLSchema.STRING)); // Required: Name of the repository with the language tag
-		metadata.setDescription(
-				valueFactory.createLiteral(("FDP of " + host), org.eclipse.rdf4j.model.vocabulary.XMLSchema.STRING)); // Optional: Description of the repository with the language tag
+		metadata.setTitle(valueFactory.createLiteral(("FDP of " + host), XMLSchema.STRING));
+		metadata.setDescription(valueFactory.createLiteral(("FDP of " + host), XMLSchema.STRING));
 		metadata.setLanguage(valueFactory.createIRI("http://id.loc.gov/vocabulary/iso639-1/en"));
 		metadata.setLicense(valueFactory.createIRI("http://rdflicense.appspot.com/rdflicense/cc-by-nc-nd3.0"));
-		metadata.setVersion(valueFactory.createLiteral("1.0", org.eclipse.rdf4j.model.vocabulary.XMLSchema.FLOAT));
+		metadata.setVersion(valueFactory.createLiteral("1.0", XMLSchema.FLOAT));
 		metadata.setSwaggerDoc(valueFactory.createIRI(url + "/swagger-ui.html"));
 		metadata.setInstitutionCountry(valueFactory.createIRI("http://lexvo.org/id/iso3166/PT"));
-		nl.dtl.fairmetadata4j.model.Identifier id = new nl.dtl.fairmetadata4j.model.Identifier();
+		Identifier id = new Identifier();
 		id.setUri(valueFactory.createIRI(url + "/metadataID"));
-		id.setIdentifier(
-				valueFactory.createLiteral("fdp-metadataID", org.eclipse.rdf4j.model.vocabulary.XMLSchema.STRING));
-		//// id.setType(nl.dtl.fairmetadata4j.utils.vocabulary.DataCite.RESOURCE_IDENTIFIER);
+		id.setIdentifier(valueFactory.createLiteral("fdp-metadataID", XMLSchema.STRING));
+		id.setType(DataCite.RESOURCE_IDENTIFIER);
 		metadata.setIdentifier(id);
-		nl.dtl.fairmetadata4j.model.Agent publisher = new nl.dtl.fairmetadata4j.model.Agent();
+		pt.ua.fairdata.fairmetadata4j.model.Agent publisher = new pt.ua.fairdata.fairmetadata4j.model.Agent();
 		publisher.setUri(valueFactory.createIRI("http://www.ua.pt"));
 		publisher.setType(org.eclipse.rdf4j.model.vocabulary.FOAF.ORGANIZATION);
-		publisher.setName(valueFactory.createLiteral("UA", org.eclipse.rdf4j.model.vocabulary.XMLSchema.STRING));
+		publisher.setName(valueFactory.createLiteral("UA", XMLSchema.STRING));
 		metadata.setPublisher(publisher);
 		metadata.setInstitution(publisher);
-		nl.dtl.fairmetadata4j.model.Identifier repoId = new nl.dtl.fairmetadata4j.model.Identifier();
+		Identifier repoId = new Identifier();
 		repoId.setUri(valueFactory.createIRI(url + "/repoID"));
-		repoId.setIdentifier(
-				valueFactory.createLiteral("fdp-repoID", org.eclipse.rdf4j.model.vocabulary.XMLSchema.STRING));
-		//// repoId.setType(nl.dtl.fairmetadata4j.utils.vocabulary.DataCite.RESOURCE_IDENTIFIER);
+		repoId.setIdentifier(valueFactory.createLiteral("fdp-repoID", XMLSchema.STRING));
+		repoId.setType(DataCite.RESOURCE_IDENTIFIER);
 		metadata.setRepostoryIdentifier(repoId);
 		return metadata;
 	}
 
-	/**
-	 * Get requested URL
-	 *
-	 * @param request HttpServletRequest
-	 * @return URL as a string
-	 */
-	public static String getRequesedURL(javax.servlet.http.HttpServletRequest request) {
+	public static String getRequesedURL(HttpServletRequest request) {
 		String url = request.getRequestURL().toString();
 		if (url.endsWith("/")) {
 			url = url.substring(0, url.length() - 1);
@@ -202,12 +183,6 @@ public class FDPUtils {
 		return url;
 	}
 
-	/**
-	 * Trim white space at start, end and between strings
-	 *
-	 * @param str Input string
-	 * @return Trimmed string
-	 */
 	public static String trimmer(String str) {
 		String trimmedStr = str;
 		trimmedStr = trimmedStr.trim();

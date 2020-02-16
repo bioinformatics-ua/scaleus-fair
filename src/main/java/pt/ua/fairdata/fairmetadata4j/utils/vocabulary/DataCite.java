@@ -21,12 +21,17 @@
  * THE SOFTWARE.
  */
 
-package pt.ua.fairdata.fairdatapoint.service;
+package pt.ua.fairdata.fairmetadata4j.utils.vocabulary;
 
-public class FairMetadataServiceException extends Exception {
-	private static final long serialVersionUID = 1L;
+import org.eclipse.rdf4j.model.IRI;
+import org.eclipse.rdf4j.model.ValueFactory;
+import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 
-	public FairMetadataServiceException(String msg) {
-		super(msg);
-	}
+// DataCite vocabulary. See http://www.sparontologies.net/ontologies/datacite/source.html
+public class DataCite {
+	private static final ValueFactory f = SimpleValueFactory.getInstance();
+	public static final String PREFIX = "dataCite";
+	public static final String NAMESPACE = "http://purl.org/spar/datacite/";
+	public static final IRI IDENTIFIER = f.createIRI(NAMESPACE + "Identifier");
+	public static final IRI RESOURCE_IDENTIFIER = f.createIRI(NAMESPACE + "ResourceIdentifier");
 }

@@ -21,12 +21,22 @@
  * THE SOFTWARE.
  */
 
-package pt.ua.fairdata.fairdatapoint.service;
+package pt.ua.fairdata.fairmetadata4j.utils.vocabulary;
 
-public class FairMetadataServiceException extends Exception {
-	private static final long serialVersionUID = 1L;
+import org.eclipse.rdf4j.model.IRI;
+import org.eclipse.rdf4j.model.ValueFactory;
+import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 
-	public FairMetadataServiceException(String msg) {
-		super(msg);
-	}
+// R3d vocabulary. See https://github.com/re3data/ontology/blob/master/r3dOntology.ttl
+public class R3D {
+	private static final ValueFactory f = SimpleValueFactory.getInstance();
+	public static final String PREFIX = "r3d";
+	public static final String NAMESPACE = "http://www.re3data.org/schema/3-0#";
+	public static final IRI TYPE_REPOSTORY = f.createIRI(NAMESPACE + "Repository");
+	public static final IRI DATA_CATALOG = f.createIRI(NAMESPACE + "dataCatalog");
+	public static final IRI REPO_IDENTIFIER = f.createIRI(NAMESPACE + "repositoryIdentifier");
+	public static final IRI INSTITUTION = f.createIRI(NAMESPACE + "institution");
+	public static final IRI INSTITUTION_COUNTRY = f.createIRI(NAMESPACE + "institutionCountry");
+	public static final IRI REPO_LAST_UPDATE = f.createIRI(NAMESPACE + "lastUpdate");
+	public static final IRI REPO_START_DATE = f.createIRI(NAMESPACE + "startDate");
 }

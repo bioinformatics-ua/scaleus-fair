@@ -140,11 +140,11 @@
 			<artifactId>servlet-api</artifactId>
 			<version>${javax.servlet.version}</version>
 		</dependency>
-		<dependency>
-			<groupId>nl.dtl</groupId>
-			<artifactId>fairmetadata4j</artifactId>
-			<version>1.0.0</version>
-		</dependency>
+<!-- 		<dependency> -->
+<!-- 			<groupId>nl.dtl</groupId> -->
+<!-- 			<artifactId>fairmetadata4j</artifactId> -->
+<!-- 			<version>1.0.0</version> -->
+<!-- 		</dependency> -->
 	</dependencies>
 	<build>
 		<resources>
@@ -190,10 +190,10 @@
 			</plugin>
 		</plugins>
 	</build>
-	<repositories>
-		<repository>
-			<id>lib</id>
-			<url>file://${project.basedir}/lib</url>
-		</repository>
-	</repositories>
+<!-- 	<repositories> -->
+<!-- 		<repository> -->
+<!-- 			<id>lib</id> -->
+<!-- 			<url>file://${project.basedir}/lib</url> -->
+<!-- 		</repository> -->
+<!-- 	</repositories> -->
 </project>

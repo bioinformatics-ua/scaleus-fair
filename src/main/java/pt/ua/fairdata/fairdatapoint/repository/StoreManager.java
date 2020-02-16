@@ -23,55 +23,20 @@
 
 package pt.ua.fairdata.fairdatapoint.repository;
 
-/**
- * An interface for store manager
- * 
- * @author Rajaram Kaliyaperumal <rr.kaliyaperumal@gmail.com>
- * @author Kees Burger <kees.burger@dtls.nl>
- * @since 2016-01-05
- * @version 0.1
- */
+import java.util.List;
+import org.eclipse.rdf4j.model.IRI;
+import org.eclipse.rdf4j.model.Resource;
+import org.eclipse.rdf4j.model.Statement;
+import org.eclipse.rdf4j.model.Value;
+
 public interface StoreManager {
+	List<Statement> retrieveResource(IRI uri) throws StoreManagerException;
 
-	java.util.List<org.eclipse.rdf4j.model.Statement> retrieveResource(org.eclipse.rdf4j.model.IRI uri)
-			throws StoreManagerException;
+	void storeStatements(List<Statement> statements) throws StoreManagerException;
 
-	/**
-	 * Store RDF from openRDF model to the repository
-	 * 
-	 * @param statements
-	 * @throws StoreManagerException
-	 */
-	void storeStatements(java.util.List<org.eclipse.rdf4j.model.Statement> statements) throws StoreManagerException;
+	void removeStatement(Resource rsrc, IRI uri, Value value) throws StoreManagerException;
 
-	/**
-	 * Remove a statement from the repository
-	 * 
-	 * @param rsrc
-	 * @param uri
-	 * @param value
-	 * @throws StoreManagerException
-	 */
-	void removeStatement(org.eclipse.rdf4j.model.Resource rsrc, org.eclipse.rdf4j.model.IRI uri,
-			org.eclipse.rdf4j.model.Value value) throws StoreManagerException;
+	boolean isStatementExist(Resource rsrc, IRI pred, Value value) throws StoreManagerException;
 
-	/**
-	 * Check if a statement exist in a triple store
-	 * 
-	 * @param rsrc
-	 * @param pred
-	 * @param value
-	 * @return
-	 * @throws StoreManagerException
-	 */
-	boolean isStatementExist(org.eclipse.rdf4j.model.Resource rsrc, org.eclipse.rdf4j.model.IRI pred,
-			org.eclipse.rdf4j.model.Value value) throws StoreManagerException;
-
-	/**
-	 * Remove a RDF resource from the store
-	 * 
-	 * @param uri
-	 * @throws StoreManagerException
-	 */
-	void removeResource(org.eclipse.rdf4j.model.IRI uri) throws StoreManagerException;
+	void removeResource(IRI uri) throws StoreManagerException;
 }

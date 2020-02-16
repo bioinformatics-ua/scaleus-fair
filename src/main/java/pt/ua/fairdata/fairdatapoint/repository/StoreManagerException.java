@@ -23,23 +23,10 @@
 
 package pt.ua.fairdata.fairdatapoint.repository;
 
-/**
- *
- * @author Rajaram Kaliyaperumal <rr.kaliyaperumal@gmail.com>
- * @author Kees Burger <kees.burger@dtls.nl>
- * @since 2016-01-05
- * @version 0.1
- */
 public class StoreManagerException extends Exception {
 
 	private static final long serialVersionUID = 1L;
 
-	/**
-	 * Constructs an instance of <code>StoreManagerException</code> with the
-	 * specified detail message.
-	 *
-	 * @param msg the detail message.
-	 */
 	public StoreManagerException(String msg) {
 		super(msg);
 	}

@@ -21,12 +21,12 @@
  * THE SOFTWARE.
  */
 
-package pt.ua.fairdata.fairdatapoint.service;
+package pt.ua.fairdata.fairmetadata4j.io;
 
-public class FairMetadataServiceException extends Exception {
+public class MetadataException extends Exception {
 	private static final long serialVersionUID = 1L;
 
-	public FairMetadataServiceException(String msg) {
+	public MetadataException(String msg) {
 		super(msg);
 	}
 }

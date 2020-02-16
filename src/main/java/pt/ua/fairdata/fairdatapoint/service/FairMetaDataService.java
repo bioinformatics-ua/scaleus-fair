@@ -23,104 +23,31 @@
 
 package pt.ua.fairdata.fairdatapoint.service;
 
-/**
- * Fair metadata service interface
- * 
- * @author Rajaram Kaliyaperumal <rr.kaliyaperumal@gmail.com>
- * @author Kees Burger <kees.burger@dtls.nl>
- * @since 2015-11-23
- * @version 0.2
- */
+import org.eclipse.rdf4j.model.IRI;
+import pt.ua.fairdata.fairmetadata4j.io.MetadataException;
+import pt.ua.fairdata.fairmetadata4j.model.CatalogMetadata;
+import pt.ua.fairdata.fairmetadata4j.model.DatasetMetadata;
+import pt.ua.fairdata.fairmetadata4j.model.DistributionMetadata;
+import pt.ua.fairdata.fairmetadata4j.model.FDPMetadata;
+
 public interface FairMetaDataService {
 
-	/**
-	 * Get metadata of given fdp URI
-	 * 
-	 * @param uri fdp URI
-	 * @return FDPMetadata object
-	 * @throws FairMetadataServiceException
-	 */
-	nl.dtl.fairmetadata4j.model.FDPMetadata retrieveFDPMetaData(org.eclipse.rdf4j.model.IRI uri)
-			throws FairMetadataServiceException;
+	FDPMetadata retrieveFDPMetaData(IRI uri) throws FairMetadataServiceException;
 
-	/**
-	 * Get metadata of given catalog URI
-	 * 
-	 * @param uri catalog URI
-	 * @return CatalogMetadata object
-	 * @throws FairMetadataServiceException
-	 */
-	nl.dtl.fairmetadata4j.model.CatalogMetadata retrieveCatalogMetaData(org.eclipse.rdf4j.model.IRI uri)
-			throws FairMetadataServiceException;
+	CatalogMetadata retrieveCatalogMetaData(IRI uri) throws FairMetadataServiceException;
 
-	/**
-	 * Get metadata of given dataset URI
-	 * 
-	 * @param uri dataset URI
-	 * @return DatasetMetadata object
-	 * @throws FairMetadataServiceException
-	 */
-	nl.dtl.fairmetadata4j.model.DatasetMetadata retrieveDatasetMetaData(org.eclipse.rdf4j.model.IRI uri)
-			throws FairMetadataServiceException;
+	DatasetMetadata retrieveDatasetMetaData(IRI uri) throws FairMetadataServiceException;
 
-	/**
-	 * Get metadata of given distribution URI
-	 * 
-	 * @param uri distribution URI
-	 * @return DistributionMetadata object
-	 * @throws FairMetadataServiceException
-	 */
-	nl.dtl.fairmetadata4j.model.DistributionMetadata retrieveDistributionMetaData(
-			org.eclipse.rdf4j.model.IRI uri) throws FairMetadataServiceException;
+	DistributionMetadata retrieveDistributionMetaData(IRI uri) throws FairMetadataServiceException;
 
-	/**
-	 * Store catalog metadata
-	 * 
-	 * @param catalogMetadata
-	 * @throws FairMetadataServiceException
-	 * @throws                              nl.dtl.fairmetadata4j.io.MetadataException
-	 */
-	void storeCatalogMetaData(nl.dtl.fairmetadata4j.model.CatalogMetadata catalogMetadata)
-			throws FairMetadataServiceException, nl.dtl.fairmetadata4j.io.MetadataException;
+	void storeCatalogMetaData(CatalogMetadata catalogMetadata) throws FairMetadataServiceException, MetadataException;
 
-	/**
-	 * Store dataset metadata
-	 * 
-	 * @param datasetMetadata
-	 * @throws FairMetadataServiceException
-	 * @throws                              nl.dtl.fairmetadata4j.io.MetadataException
-	 */
-	void storeDatasetMetaData(nl.dtl.fairmetadata4j.model.DatasetMetadata datasetMetadata)
-			throws FairMetadataServiceException, nl.dtl.fairmetadata4j.io.MetadataException;
+	void storeDatasetMetaData(DatasetMetadata datasetMetadata) throws FairMetadataServiceException, MetadataException;
 
-	/**
-	 * Store fdp metadata
-	 * 
-	 * @param fdpMetaData
-	 * @throws FairMetadataServiceException
-	 * @throws                              nl.dtl.fairmetadata4j.io.MetadataException
-	 */
-	void storeFDPMetaData(nl.dtl.fairmetadata4j.model.FDPMetadata fdpMetaData)
-			throws FairMetadataServiceException, nl.dtl.fairmetadata4j.io.MetadataException;
+	void storeFDPMetaData(FDPMetadata fdpMetaData) throws FairMetadataServiceException, MetadataException;
 
-	/**
-	 * Store distribution metadata
-	 * 
-	 * @param distributionMetadata
-	 * @throws nl.dtls.fairdatapoint.service.FairMetadataServiceException
-	 * @throws nl.dtl.fairmetadata4j.io.MetadataException
-	 */
-	void storeDistributionMetaData(nl.dtl.fairmetadata4j.model.DistributionMetadata distributionMetadata)
-			throws FairMetadataServiceException, nl.dtl.fairmetadata4j.io.MetadataException;
+	void storeDistributionMetaData(DistributionMetadata distributionMetadata)
+			throws FairMetadataServiceException, MetadataException;
 
-	/**
-	 * Update fdp metadata
-	 * 
-	 * @param uri
-	 * @param fdpMetaData
-	 * @throws FairMetadataServiceException
-	 * @throws                              nl.dtl.fairmetadata4j.io.MetadataException
-	 */
-	void updateFDPMetaData(org.eclipse.rdf4j.model.IRI uri, nl.dtl.fairmetadata4j.model.FDPMetadata fdpMetaData)
-			throws FairMetadataServiceException, nl.dtl.fairmetadata4j.io.MetadataException;
+	void updateFDPMetaData(IRI uri, FDPMetadata fdpMetaData) throws FairMetadataServiceException, MetadataException;
 }

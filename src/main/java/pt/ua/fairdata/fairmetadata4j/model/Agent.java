@@ -21,12 +21,57 @@
  * THE SOFTWARE.
  */
 
-package pt.ua.fairdata.fairdatapoint.service;
+package pt.ua.fairdata.fairmetadata4j.model;
 
-public class FairMetadataServiceException extends Exception {
-	private static final long serialVersionUID = 1L;
+import org.eclipse.rdf4j.model.IRI;
+import org.eclipse.rdf4j.model.Literal;
+import org.eclipse.rdf4j.model.vocabulary.FOAF;
 
-	public FairMetadataServiceException(String msg) {
-		super(msg);
+// Agent object
+public class Agent {
+	private IRI uri;
+	private IRI type = FOAF.AGENT;
+	private Literal name;
+
+	/**
+	 * @return the uri
+	 */
+	public IRI getUri() {
+		return uri;
+	}
+
+	/**
+	 * @param uri the uri to set
+	 */
+	public void setUri(IRI uri) {
+		this.uri = uri;
+	}
+
+	/**
+	 * @return the type
+	 */
+	public IRI getType() {
+		return type;
+	}
+
+	/**
+	 * @param type the type to set
+	 */
+	public void setType(IRI type) {
+		this.type = type;
+	}
+
+	/**
+	 * @return the name
+	 */
+	public Literal getName() {
+		return name;
+	}
+
+	/**
+	 * @param name the name to set
+	 */
+	public void setName(Literal name) {
+		this.name = name;
 	}
 }

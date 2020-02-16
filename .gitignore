@@ -13,3 +13,4 @@ nbactions.xml
 # JetBrains IDE
 *.iml
 .idea/
+/bin/
