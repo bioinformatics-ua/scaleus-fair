@@ -47,14 +47,14 @@ public class RESTService implements IService {
 	@GET // Get fdp metadata
 	@Path("/fair/fdp") // http://localhost/scaleus/api/v1/fair/fdp
 	@Produces(MediaType.APPLICATION_JSON)
-	public pt.ua.fairdata.fairmetadata4j.model.FDPMetadata getFDPMetaData(
+	public pt.ua.scaleus.metadata.Repository getFDPMetaData(
 			@javax.ws.rs.core.Context final javax.servlet.http.HttpServletRequest request,
 			@javax.ws.rs.core.Context javax.servlet.http.HttpServletResponse response) {
-		pt.ua.fairdata.fairmetadata4j.model.FDPMetadata metadata = new pt.ua.fairdata.fairmetadata4j.model.FDPMetadata();
-		String uri = pt.ua.fairdata.fairdatapoint.utils.FDPUtils.getRequesedURL(request);
+		pt.ua.scaleus.metadata.Repository metadata = new pt.ua.scaleus.metadata.Repository();
+		String uri = pt.ua.scaleus.metadata.FDPUtils.getRequesedURL(request);
 		try {
 			metadata = Init.fairMetaDataService
-					.retrieveFDPMetaData(org.eclipse.rdf4j.model.impl.SimpleValueFactory.getInstance().createIRI(uri));
+					.retrieveRepositoryMetadata(org.eclipse.rdf4j.model.impl.SimpleValueFactory.getInstance().createIRI(uri));
 		} catch (Exception ex) {
 			log.error(ex.getMessage());
 		}
