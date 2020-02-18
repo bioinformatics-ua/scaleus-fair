@@ -33,6 +33,13 @@ Content-Type: application/json
 PUT /api/v1/fair/fdp/ HTTP/1.1
 ```
 
+**Get catalog metadata:**
+
+```
+GET /api/v1/fair/fdp/catalog/{id} HTTP/1.1
+Content-Type: application/json
+```
+
 **List all datasets available:**
 
 ```
