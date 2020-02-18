@@ -1,15 +1,9 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package pt.ua.scaleus.service;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
 import java.util.Set;
-
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
@@ -22,13 +16,11 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-
 import org.apache.log4j.Logger;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-
 import pt.ua.scaleus.api.API;
 import pt.ua.scaleus.api.Init;
 import pt.ua.scaleus.service.data.NTriple;
@@ -37,6 +29,7 @@ import pt.ua.scaleus.service.data.Namespace;
 /**
  *
  * @author Pedro Sernadela <sernadela at ua.pt>
+ * @author Arnaldo Pereira <arnaldop at ua.pt>
  */
 @Path("/v1")
 public class RESTService implements IService {
@@ -44,7 +37,7 @@ public class RESTService implements IService {
 	API api = Init.getAPI();
 	private static final Logger log = Logger.getLogger(RESTService.class);
 
-	@GET // Get fdp metadata
+	@GET // Get repository metadata
 	@Path("/fair/fdp") // http://localhost/scaleus/api/v1/fair/fdp
 	@Produces(MediaType.APPLICATION_JSON)
 	public pt.ua.scaleus.metadata.Repository getFDPMetaData(
@@ -53,12 +46,34 @@ public class RESTService implements IService {
 		pt.ua.scaleus.metadata.Repository metadata = new pt.ua.scaleus.metadata.Repository();
 		String uri = pt.ua.scaleus.metadata.FDPUtils.getRequesedURL(request);
 		try {
-			metadata = Init.fairMetaDataService
-					.retrieveRepositoryMetadata(org.eclipse.rdf4j.model.impl.SimpleValueFactory.getInstance().createIRI(uri));
+			metadata = Init.fairMetaDataService.retrieveRepositoryMetadata(
+					org.eclipse.rdf4j.model.impl.SimpleValueFactory.getInstance().createIRI(uri));
 		} catch (Exception ex) {
 			log.error(ex.getMessage());
 		}
 		return metadata;
+	}
+
+	@javax.ws.rs.PUT // Update repository metadata
+	@Path("/fair/fdp") // http://localhost/scaleus/api/v1/fair/fdp
+	@Consumes(MediaType.TEXT_PLAIN)
+	@Produces(MediaType.TEXT_PLAIN)
+	public String updateFDPMetaData(@javax.ws.rs.core.Context final javax.servlet.http.HttpServletRequest request) {
+		try {
+			String uri = pt.ua.scaleus.metadata.FDPUtils.getRequesedURL(request);
+			String body = com.google.common.io.CharStreams.toString(
+					new java.io.InputStreamReader(request.getInputStream(), com.google.common.base.Charsets.UTF_8));
+			pt.ua.scaleus.metadata.RepositoryParser parser = pt.ua.scaleus.metadata.Utils.getFdpParser();
+			pt.ua.scaleus.metadata.Repository metadata = parser.parse(body,
+					org.eclipse.rdf4j.model.impl.SimpleValueFactory.getInstance().createIRI(uri),
+					org.eclipse.rdf4j.rio.RDFFormat.TURTLE);
+			Init.fairMetaDataService.updateRepositoryMetadata(
+					org.eclipse.rdf4j.model.impl.SimpleValueFactory.getInstance().createIRI(uri), metadata);
+			return "Metadata is updated";
+		} catch (Exception ex) {
+			log.error(ex.getMessage());
+			return "Metadata not updated";
+		}
 	}
 
 	@GET
