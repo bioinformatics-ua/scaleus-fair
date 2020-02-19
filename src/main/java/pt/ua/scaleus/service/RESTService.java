@@ -33,6 +33,8 @@ import pt.ua.scaleus.metadata.Catalog;
 import pt.ua.scaleus.metadata.Dataset;
 import pt.ua.scaleus.metadata.DatasetParser;
 import pt.ua.scaleus.metadata.Distribution;
+import pt.ua.scaleus.metadata.DistributionParser;
+
 import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 import pt.ua.scaleus.metadata.FDPUtils;
 import com.google.common.io.CharStreams;
@@ -172,27 +174,52 @@ public class RESTService implements IService {
 		return metadata;
 	}
 	
+	@POST // Store distribution metadata
+	@Path("/fair/fdp/distribution/{id}") // http://localhost/scaleus/api/v1/fair/fdp/distribution/sparql
+	@Consumes(MediaType.TEXT_PLAIN)
+	@Produces(MediaType.TEXT_PLAIN)
+	public String storeDistribution(@javax.ws.rs.core.Context final javax.servlet.http.HttpServletRequest request,
+			@PathParam("id") String id) {
+		try {
+			// String trimmedId = pt.ua.fairdata.fairdatapoint.utils.FDPUtils.trimmer(id);
+			String requestedURL = FDPUtils.getRequesedURL(request);
+			org.eclipse.rdf4j.model.IRI uri = org.eclipse.rdf4j.model.impl.SimpleValueFactory.getInstance()
+					.createIRI(requestedURL);
+			String body = com.google.common.io.CharStreams.toString(
+					new java.io.InputStreamReader(request.getInputStream(), com.google.common.base.Charsets.UTF_8));
+			DistributionParser parser = Utils.getDistributionParser();
+			Distribution metadata = parser.parse(body, uri, RDFFormat.TURTLE);
+			metadata.setUri(uri);
+//			if (metadata.getParentURI() == null) {
+//				String fURI = "http://localhost/scaleus/api/v1/fair/fdp";
+//				org.eclipse.rdf4j.model.IRI fdpURI = org.eclipse.rdf4j.model.impl.SimpleValueFactory.getInstance()
+//						.createIRI(fURI);
+//				metadata.setParentURI(fdpURI);
+//			}
+			Init.fairMetadataService.storeDistributionMetadata(metadata);
+			return "Metadata is stored";
+		} catch (Exception ex) {
+			log.error(ex.getMessage());
+			return "Metadata not stored";
+		}
+	}
+	
 	@GET // Get distribution metadata
 	@Path("/fair/fdp/distribution/{id}") // http://localhost/scaleus/api/v1/fair/fdp/distribution/{id}
 	@Produces(MediaType.APPLICATION_JSON)
 	public Distribution getDistribution(
-			@javax.ws.rs.core.Context final javax.servlet.http.HttpServletRequest request,
-			@javax.ws.rs.core.Context javax.servlet.http.HttpServletResponse response, @PathParam("id") String id) {
+			@Context final HttpServletRequest request,
+			@Context HttpServletResponse response, @PathParam("id") String id) {
 		Distribution metadata = new Distribution();
 		String uri = FDPUtils.getRequesedURL(request);
 		try {
-			metadata = Init.fairMetadataService.retrieveDistributionMetadata(
-					org.eclipse.rdf4j.model.impl.SimpleValueFactory.getInstance().createIRI(uri));
+			metadata = Init.fairMetadataService.retrieveDistributionMetadata(SimpleValueFactory.getInstance().createIRI(uri));
 		} catch (Exception ex) {
 			log.error(ex.getMessage());
 		}
 		return metadata;
 	}
 	
-	
-	
-	
-
 	@GET
 	@Path("/sparqler/{dataset}/sparql")
 	@Produces("application/sparql-results+xml")
