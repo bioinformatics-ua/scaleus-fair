@@ -25,6 +25,24 @@ import pt.ua.scaleus.api.API;
 import pt.ua.scaleus.api.Init;
 import pt.ua.scaleus.service.data.NTriple;
 import pt.ua.scaleus.service.data.Namespace;
+import pt.ua.scaleus.metadata.Repository;
+import javax.ws.rs.core.Context;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import pt.ua.scaleus.metadata.Catalog;
+import pt.ua.scaleus.metadata.Dataset;
+import pt.ua.scaleus.metadata.Distribution;
+import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
+import pt.ua.scaleus.metadata.FDPUtils;
+import com.google.common.io.CharStreams;
+import java.io.InputStreamReader;
+import org.eclipse.rdf4j.rio.RDFFormat;
+import javax.ws.rs.PUT;
+import pt.ua.scaleus.metadata.Utils;
+import com.google.common.base.Charsets;
+import pt.ua.scaleus.metadata.RepositoryParser;
+import org.eclipse.rdf4j.model.IRI;
+import pt.ua.scaleus.metadata.CatalogParser;
 
 /**
  *
@@ -40,90 +58,99 @@ public class RESTService implements IService {
 	@GET // Get repository metadata
 	@Path("/fair/fdp") // http://localhost/scaleus/api/v1/fair/fdp
 	@Produces(MediaType.APPLICATION_JSON)
-	public pt.ua.scaleus.metadata.Repository getFDPMetaData(
-			@javax.ws.rs.core.Context final javax.servlet.http.HttpServletRequest request,
-			@javax.ws.rs.core.Context javax.servlet.http.HttpServletResponse response) {
-		pt.ua.scaleus.metadata.Repository metadata = new pt.ua.scaleus.metadata.Repository();
-		String uri = pt.ua.scaleus.metadata.FDPUtils.getRequesedURL(request);
+	public Repository getRepositoryMetadata(@Context final HttpServletRequest request, @Context HttpServletResponse response) {
+		Repository metadata = new Repository();
+		String uri = FDPUtils.getRequesedURL(request);
 		try {
-			metadata = Init.fairMetaDataService.retrieveRepositoryMetadata(
-					org.eclipse.rdf4j.model.impl.SimpleValueFactory.getInstance().createIRI(uri));
+			metadata = Init.fairMetadataService
+					.retrieveRepositoryMetadata(SimpleValueFactory.getInstance().createIRI(uri));
 		} catch (Exception ex) {
 			log.error(ex.getMessage());
 		}
 		return metadata;
 	}
 
-	@javax.ws.rs.PUT // Update repository metadata
+	@PUT // Update repository metadata
 	@Path("/fair/fdp") // http://localhost/scaleus/api/v1/fair/fdp
 	@Consumes(MediaType.TEXT_PLAIN)
 	@Produces(MediaType.TEXT_PLAIN)
-	public String updateFDPMetaData(@javax.ws.rs.core.Context final javax.servlet.http.HttpServletRequest request) {
+	public String updateRepositoryMetadata(@Context final HttpServletRequest request) {
 		try {
-			String uri = pt.ua.scaleus.metadata.FDPUtils.getRequesedURL(request);
-			String body = com.google.common.io.CharStreams.toString(
-					new java.io.InputStreamReader(request.getInputStream(), com.google.common.base.Charsets.UTF_8));
-			pt.ua.scaleus.metadata.RepositoryParser parser = pt.ua.scaleus.metadata.Utils.getFdpParser();
-			pt.ua.scaleus.metadata.Repository metadata = parser.parse(body,
-					org.eclipse.rdf4j.model.impl.SimpleValueFactory.getInstance().createIRI(uri),
-					org.eclipse.rdf4j.rio.RDFFormat.TURTLE);
-			Init.fairMetaDataService.updateRepositoryMetadata(
-					org.eclipse.rdf4j.model.impl.SimpleValueFactory.getInstance().createIRI(uri), metadata);
+			String uri = FDPUtils.getRequesedURL(request);
+			String body = CharStreams.toString(new InputStreamReader(request.getInputStream(), Charsets.UTF_8));
+			RepositoryParser parser = Utils.getFdpParser();
+			Repository metadata = parser.parse(body, SimpleValueFactory.getInstance().createIRI(uri), RDFFormat.TURTLE);
+			Init.fairMetadataService.updateRepositoryMetadata(SimpleValueFactory.getInstance().createIRI(uri), metadata);
 			return "Metadata is updated";
 		} catch (Exception ex) {
 			log.error(ex.getMessage());
 			return "Metadata not updated";
 		}
 	}
-	
+
 	@POST // Store catalog metadata
 	@Path("/fair/fdp/catalog/{id}") // http://localhost/scaleus/api/v1/fair/fdp/catalog/{id}
 	@Consumes(MediaType.TEXT_PLAIN)
 	@Produces(MediaType.TEXT_PLAIN)
-	public String storeCatalogMetaData(@javax.ws.rs.core.Context final javax.servlet.http.HttpServletRequest request,
-			@PathParam("id") String id) {
+	public String storeCatalogMetadata(@Context final HttpServletRequest request, @PathParam("id") String id) {
 		try {
-			// String trimmedId = pt.ua.fairdata.fairdatapoint.utils.FDPUtils.trimmer(id);
-			String requestedURL = pt.ua.scaleus.metadata.FDPUtils.getRequesedURL(request);
-			org.eclipse.rdf4j.model.IRI uri = org.eclipse.rdf4j.model.impl.SimpleValueFactory.getInstance()
-					// .createIRI(requestedURL + "/" + trimmedId);
+			String requestedURL = FDPUtils.getRequesedURL(request);
+			IRI uri = SimpleValueFactory.getInstance()
 					.createIRI(requestedURL);
-			String body = com.google.common.io.CharStreams.toString(
-					new java.io.InputStreamReader(request.getInputStream(), com.google.common.base.Charsets.UTF_8));
-			pt.ua.scaleus.metadata.CatalogParser parser = pt.ua.scaleus.metadata.Utils.getCatalogParser();
-			pt.ua.scaleus.metadata.Catalog metadata = parser.parse(body, uri, org.eclipse.rdf4j.rio.RDFFormat.TURTLE);
+			String body = CharStreams.toString(new InputStreamReader(request.getInputStream(), Charsets.UTF_8));
+			CatalogParser parser = Utils.getCatalogParser();
+			Catalog metadata = parser.parse(body, uri, RDFFormat.TURTLE);
 			metadata.setUri(uri);
 			if (metadata.getParentURI() == null) {
-				// String fURI = requestedURL.replace("/catalog", "");
 				String fURI = "http://localhost/scaleus/api/v1/fair/fdp";
-				org.eclipse.rdf4j.model.IRI fdpURI = org.eclipse.rdf4j.model.impl.SimpleValueFactory.getInstance()
-						.createIRI(fURI);
+				IRI fdpURI = SimpleValueFactory.getInstance().createIRI(fURI);
 				metadata.setParentURI(fdpURI);
 			}
-			Init.fairMetaDataService.storeCatalogMetaData(metadata);
+			Init.fairMetadataService.storeCatalogMetadata(metadata);
 			return "Metadata is stored";
 		} catch (Exception ex) {
 			return "Metadata not stored";
 		}
 	}
-	
+
 	@GET // Get catalog metadata
 	@Path("/fair/fdp/catalog/{id}") // http://localhost/scaleus/api/v1/fair/fdp/catalog/{id}
 	@Produces(MediaType.APPLICATION_JSON)
-	public pt.ua.scaleus.metadata.Catalog getCatalogMetaData(
-			@javax.ws.rs.core.Context final javax.servlet.http.HttpServletRequest request,
-			@javax.ws.rs.core.Context javax.servlet.http.HttpServletResponse response, @PathParam("id") String id) {
-		pt.ua.scaleus.metadata.Catalog metadata = new pt.ua.scaleus.metadata.Catalog();
-		String uri = pt.ua.scaleus.metadata.FDPUtils.getRequesedURL(request);
+	public Catalog getCatalogMetaData(@Context final HttpServletRequest request, @Context HttpServletResponse response,
+			@PathParam("id") String id) {
+		Catalog metadata = new Catalog();
+		String uri = FDPUtils.getRequesedURL(request);
 		System.out.println(uri);
 		try {
-			metadata = Init.fairMetaDataService.retrieveCatalogMetadata(
-					org.eclipse.rdf4j.model.impl.SimpleValueFactory.getInstance().createIRI(uri));
+			metadata = Init.fairMetadataService.retrieveCatalogMetadata(SimpleValueFactory.getInstance().createIRI(uri));
 		} catch (Exception ex) {
 			log.error(ex.getMessage());
 		}
 		return metadata;
 	}
+	
+	@GET // Get dataset metadata
+	@Path("/fair/fdp/dataset/{id}") // http://localhost/scaleus/api/v1/fair/fdp/dataset/{id}
+	@Produces(MediaType.APPLICATION_JSON)
+	public Dataset getDatasetMetadata(
+			@Context final HttpServletRequest request,
+			@Context HttpServletResponse response, @PathParam("id") String id) {
+		Dataset metadata = new Dataset();
+		String uri = FDPUtils.getRequesedURL(request);
+		try {
+			metadata = Init.fairMetadataService.retrieveDatasetMetadata(SimpleValueFactory.getInstance().createIRI(uri));
+		} catch (Exception ex) {
+			log.error(ex.getMessage());
+		}
+		return metadata;
+	}
+	
+	
+	
+	
+	
+	
+	
 
 	@GET
 	@Path("/sparqler/{dataset}/sparql")

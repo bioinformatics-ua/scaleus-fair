@@ -35,7 +35,7 @@ import org.eclipse.rdf4j.model.vocabulary.DCTERMS;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import com.google.common.base.Preconditions;
 
-public class FairMetaDataServiceImpl implements FairMetaDataService {
+public class FairMetadataServiceImpl implements FairMetadataService {
 	private StoreManager storeManager = new StoreManagerImpl();
 
 	@Override
@@ -63,7 +63,7 @@ public class FairMetaDataServiceImpl implements FairMetaDataService {
 	}
 
 	@Override
-	public Distribution retrieveDistributionMetaData(@Nonnull IRI uri) throws Exception, ResourceNotFoundException {
+	public Distribution retrieveDistributionMetadata(@Nonnull IRI uri) throws Exception, ResourceNotFoundException {
 		List<Statement> statements = retrieveStatements(uri);
 		DistributionParser parser = Utils.getDistributionParser();
 		Distribution metadata = parser.parse(statements, uri);
@@ -77,14 +77,14 @@ public class FairMetaDataServiceImpl implements FairMetaDataService {
 	}
 
 	@Override
-	public void storeCatalogMetaData(@Nonnull Catalog metadata) throws Exception {
+	public void storeCatalogMetadata(@Nonnull Catalog metadata) throws Exception {
 		Preconditions.checkState(metadata.getParentURI() != null,
 				"No fdp URI is provied. Include dcterms:isPartOf statement " + "in the post body rdf");
 		storeMetadata(metadata);
 	}
 
 	@Override
-	public void storeDatasetMetaData(@Nonnull Dataset metadata) throws Exception {
+	public void storeDatasetMetadata(@Nonnull Dataset metadata) throws Exception {
 		Preconditions.checkState(metadata.getParentURI() != null,
 				"No catalog URI is provied. Include dcterms:isPartOf statement " + "in the post body rdf");
 		Preconditions.checkState(isSubjectURIExist(metadata.getParentURI()),
@@ -93,7 +93,7 @@ public class FairMetaDataServiceImpl implements FairMetaDataService {
 	}
 
 	@Override
-	public void storeDistributionMetaData(@Nonnull Distribution metadata) throws Exception {
+	public void storeDistributionMetadata(@Nonnull Distribution metadata) throws Exception {
 		Preconditions.checkState(metadata.getParentURI() != null,
 				"No dataset URI is provied. Include dcterms:isPartOf statement " + "in the post body rdf");
 		Preconditions.checkState(isSubjectURIExist(metadata.getParentURI()),

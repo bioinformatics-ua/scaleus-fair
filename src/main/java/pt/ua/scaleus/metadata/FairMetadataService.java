@@ -25,7 +25,7 @@ package pt.ua.scaleus.metadata;
 
 import org.eclipse.rdf4j.model.IRI;
 
-public interface FairMetaDataService {
+public interface FairMetadataService {
 
 	Repository retrieveRepositoryMetadata(IRI uri) throws Exception;
 
@@ -33,15 +33,15 @@ public interface FairMetaDataService {
 
 	Dataset retrieveDatasetMetadata(IRI uri) throws Exception;
 
-	Distribution retrieveDistributionMetaData(IRI uri) throws Exception;
+	Distribution retrieveDistributionMetadata(IRI uri) throws Exception;
 
-	void storeCatalogMetaData(Catalog catalogMetadata) throws Exception;
+	void storeCatalogMetadata(Catalog catalogMetadata) throws Exception;
 
-	void storeDatasetMetaData(Dataset datasetMetadata) throws Exception;
+	void storeDatasetMetadata(Dataset datasetMetadata) throws Exception;
 
 	void storeRepositoryMetadata(Repository fdpMetaData) throws Exception;
 
-	void storeDistributionMetaData(Distribution distributionMetadata) throws Exception;
+	void storeDistributionMetadata(Distribution distributionMetadata) throws Exception;
 
 	void updateRepositoryMetadata(IRI uri, Repository fdpMetaData) throws Exception;
 }

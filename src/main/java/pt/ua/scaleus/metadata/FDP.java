@@ -32,8 +32,8 @@ public class FDP {
 	private static final ValueFactory f = SimpleValueFactory.getInstance();
 	public static final String PREFIX = "fdp-o";
 	public static final String NAMESPACE = "http://rdf.biosemantics.org/ontologies/fdp-o#";
-	public static final IRI DATA_RECORD = f.createIRI(NAMESPACE + "dataRecord");
-	public static final IRI TYPE_DATA_RECORD = f.createIRI(NAMESPACE + "DataRecord");
+	//public static final IRI DATA_RECORD = f.createIRI(NAMESPACE + "dataRecord");
+	//public static final IRI TYPE_DATA_RECORD = f.createIRI(NAMESPACE + "DataRecord");
 	public static final IRI REFERS_TO = f.createIRI(NAMESPACE + "refersTo");
 	public static final IRI METADATA_ISSUED = f.createIRI(NAMESPACE + "metadataIssued");
 	public static final IRI METADATA_MODIFIED = f.createIRI(NAMESPACE + "metadataModified");

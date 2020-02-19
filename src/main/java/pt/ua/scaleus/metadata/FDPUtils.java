@@ -123,7 +123,7 @@ public class FDPUtils {
 		return metadata;
 	}
 
-	public static void storeDefaultFDPMetadata(String fdpUrl, FairMetaDataService fairMetaDataService)
+	public static void storeDefaultFDPMetadata(String fdpUrl, FairMetadataService fairMetaDataService)
 			throws Exception, MalformedURLException, Exception, Exception {
 		Repository metadata = FDPUtils.getDefaultFDPMetadata(fdpUrl);
 		fairMetaDataService.storeRepositoryMetadata(metadata);
