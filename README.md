@@ -40,6 +40,26 @@ GET /api/v1/fair/fdp/catalog/{id} HTTP/1.1
 Content-Type: application/json
 ```
 
+**Store dataset metadata:**
+
+```
+POST /api/v1/fair/fdp/dataset/{id} HTTP/1.1
+```
+
+**Get dataset metadata:**
+
+```
+GET /api/v1/fair/fdp/dataset/{id} HTTP/1.1
+Content-Type: application/json
+```
+
+**Get distribution metadata:**
+
+```
+GET /api/v1/fair/fdp/distribution/{id} HTTP/1.1
+Content-Type: application/json
+```
+
 **List all datasets available:**
 
 ```

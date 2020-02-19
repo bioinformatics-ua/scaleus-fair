@@ -31,6 +31,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import pt.ua.scaleus.metadata.Catalog;
 import pt.ua.scaleus.metadata.Dataset;
+import pt.ua.scaleus.metadata.DatasetParser;
 import pt.ua.scaleus.metadata.Distribution;
 import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 import pt.ua.scaleus.metadata.FDPUtils;
@@ -129,6 +130,32 @@ public class RESTService implements IService {
 		return metadata;
 	}
 	
+	@POST // Store dataset metadata
+	@Path("/fair/fdp/dataset/{id}") // http://localhost/scaleus/api/v1/fair/fdp/dataset/{id}
+	@Consumes(MediaType.TEXT_PLAIN)
+	@Produces(MediaType.TEXT_PLAIN)
+	public String storeDatasetMetadata(@Context final HttpServletRequest request, @PathParam("id") String id) {
+		try {
+			String requestedURL = FDPUtils.getRequesedURL(request);
+			IRI uri = SimpleValueFactory.getInstance().createIRI(requestedURL);
+			String body = CharStreams.toString(new InputStreamReader(request.getInputStream(), Charsets.UTF_8));
+			DatasetParser parser = Utils.getDatasetParser();
+			Dataset metadata = parser.parse(body, uri, RDFFormat.TURTLE);
+			metadata.setUri(uri);
+//			if (metadata.getParentURI() == null) {
+//				String fURI = "http://localhost/scaleus/api/v1/fair/fdp";
+//				org.eclipse.rdf4j.model.IRI fdpURI = org.eclipse.rdf4j.model.impl.SimpleValueFactory.getInstance()
+//						.createIRI(fURI);
+//				metadata.setParentURI(fdpURI);
+//			}
+			Init.fairMetadataService.storeDatasetMetadata(metadata);
+			return "Metadata is stored";
+		} catch (Exception ex) {
+			log.error(ex.getMessage());
+			return "Metadata not stored";
+		}
+	}
+	
 	@GET // Get dataset metadata
 	@Path("/fair/fdp/dataset/{id}") // http://localhost/scaleus/api/v1/fair/fdp/dataset/{id}
 	@Produces(MediaType.APPLICATION_JSON)
@@ -145,8 +172,22 @@ public class RESTService implements IService {
 		return metadata;
 	}
 	
-	
-	
+	@GET // Get distribution metadata
+	@Path("/fair/fdp/distribution/{id}") // http://localhost/scaleus/api/v1/fair/fdp/distribution/{id}
+	@Produces(MediaType.APPLICATION_JSON)
+	public Distribution getDistribution(
+			@javax.ws.rs.core.Context final javax.servlet.http.HttpServletRequest request,
+			@javax.ws.rs.core.Context javax.servlet.http.HttpServletResponse response, @PathParam("id") String id) {
+		Distribution metadata = new Distribution();
+		String uri = FDPUtils.getRequesedURL(request);
+		try {
+			metadata = Init.fairMetadataService.retrieveDistributionMetadata(
+					org.eclipse.rdf4j.model.impl.SimpleValueFactory.getInstance().createIRI(uri));
+		} catch (Exception ex) {
+			log.error(ex.getMessage());
+		}
+		return metadata;
+	}
 	
 	
 	
