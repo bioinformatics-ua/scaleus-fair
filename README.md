@@ -33,6 +33,12 @@ Content-Type: application/json
 PUT /api/v1/fair/fdp/ HTTP/1.1
 ```
 
+**Store catalog metadata:**
+
+```
+POST /api/v1/fair/fdp/catalog/{id} HTTP/1.1
+```
+
 **Get catalog metadata:**
 
 ```
