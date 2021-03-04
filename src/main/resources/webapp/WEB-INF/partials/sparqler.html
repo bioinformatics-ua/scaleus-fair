@@ -1,116 +1,118 @@
 <div class="row">
 	<div class="col-lg-12">
-		<h1 class="page-header">SPARQL</h1>
+		<h1 class="page-header">Query Interface</h1>
 	</div>
 	<!-- /.col-lg-12 -->
 </div>
-
 <!-- /.row -->
 <div class="row" ng-controller="QueriesCtrl">
-    <div class="col-lg-12">
-    <div class="btn-group" role="group">
-        <button type="button" class="btn btn-default" data-ng-click="putQuery('SELECT * { \n?s ?p ?o \n} LIMIT 1000')">Get all</button>
-        <button type="button" class="btn btn-default" data-ng-click="putQuery('SELECT (COUNT(*) as ?count)\nWHERE {\n?s ?p ?o .\n}')">Count</button>
+	<div class="col-lg-12">
+		<div class="btn-group" role="group">
+			<button type="button" class="btn btn-default"
+				data-ng-click="putQuery('SELECT * { \n?s ?p ?o \n} LIMIT 1000')">Get
+				all</button>
+			<button type="button" class="btn btn-default"
+				data-ng-click="putQuery('SELECT (COUNT(*) as ?count)\nWHERE {\n?s ?p ?o .\n}')">Count</button>
 
-        <div class="btn-group" role="group">
-          <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
-            Recent Queries
-            <span class="caret"></span>
-          </button>
-          <ul class="dropdown-menu" >
-            <li ng-show="recentQueries!==undefined" data-ng-click="clearRecentQueries()"><a>Clear all</a></li>
-            <li ng-show="recentQueries!==undefined" class="divider"></li>
-            <li ng-show="recentQueries===undefined"><a><i>None</i></a></li>
-            <li data-ng-repeat="query in recentQueries"><a data-ng-click="putQuery(query)" title="{{query}}"><i>- {{query.substring(0,60)}}...</i></a></li>
-          </ul>
-        </div>
-    </div>
-    
-	<br><br>
-	<div>
-		<form class="form-horizontal well" name="sparqler">
-			<h4>Select prefix</h4>
-			<div>
-				<div class="btn-group">
-					<button type="button"
-						ng-class="{'true':'btn btn-sm btn-warning','false':'btn btn-sm btn-default'}[ns.checked]"
-						ng-click="ns.checked = !ns.checked" data-ng-repeat="ns in namespacesContainer">{{ns.prefix}}</button>
-				</div>
-				<button type="button"
-						class="btn btn-sm btn-primary"
-						ng-click="addAllPrefix()" ng-show="namespacesContainer.length != 0">Add all</button>
-						<a href="#namespaces"><button type="button"
-						class="btn btn-sm btn-primary">Add new</button></a>
-						<!-- <a href="../app/namespaces"> -->
+			<div class="btn-group" role="group">
+				<button type="button" class="btn btn-primary dropdown-toggle"
+					data-toggle="dropdown">
+					Recent Queries <span class="caret"></span>
+				</button>
+				<ul class="dropdown-menu">
+					<li ng-show="recentQueries!==undefined"
+						data-ng-click="clearRecentQueries()"><a>Clear all</a></li>
+					<li ng-show="recentQueries!==undefined" class="divider"></li>
+					<li ng-show="recentQueries===undefined"><a><i>None</i></a></li>
+					<li data-ng-repeat="query in recentQueries"><a
+						data-ng-click="putQuery(query)" title="{{query}}"><i>-
+								{{query.substring(0,60)}}...</i></a></li>
+				</ul>
 			</div>
-			<hr>
-                        <div class="form-group">
-
-                          <div class="col-sm-9">
-                            <div class="input-group" ng-show="inference">
-                              <span class="input-group-addon">Inference Rules (optional)</span>
-                              <input type="text" class="form-control" data-ng-model="rules" placeholder="[rule1:  (?x rdfs:subClassOf ?y), (?a rdf:type ?x) -> (?a rdf:type ?y)] [rule2: ... ]">
-                            </div>
-                          </div>
-                            <span class="control-label col-sm-3"><input type="checkbox" value="" data-ng-model="inference"> Inference</span>
-                        </div>
-			<div
-				data-ng-repeat="ns in namespacesContainer| filter:{checked:true}">
-				<samp>PREFIX {{ns.prefix}}: &lt;{{ns.uri}}&gt;</samp>
-                        </div>
-                        
-                        
-
-			<div class="form-group">
-			<textarea class="form-control input-xlarge"
-				placeholder="Write your SPARQL query here"
-				data-ng-model="formSPARQL" rows="16" cols="60" required></textarea>
+		</div>
+		<br>
+		<br>
+		<div>
+			<form class="form-horizontal well" name="sparqler">
+				<h4>Select prefix</h4>
+				<div>
+					<div class="btn-group">
+						<button type="button"
+							ng-class="{'true':'btn btn-sm btn-warning','false':'btn btn-sm btn-default'}[ns.checked]"
+							ng-click="ns.checked = !ns.checked"
+							data-ng-repeat="ns in namespacesContainer">{{ns.prefix}}</button>
+					</div>
+					<button type="button" class="btn btn-sm btn-primary"
+						ng-click="addAllPrefix()"
+						ng-show="namespacesContainer.length != 0">Add all</button>
+					<a href="#namespaces"><button type="button"
+							class="btn btn-sm btn-primary">Add new</button></a>
+					<!-- <a href="../app/namespaces"> -->
 				</div>
-			<div class="form-actions">
-				<button class="btn btn-primary" data-ng-click="getData()" ng-disabled="spinner">Get data</button> 
-                                <i class="fa fa-refresh fa-spin" ng-show="spinner"></i>
-                                <span ng-show="showQueryTime">(in {{queryTime}} ms)</span>
+				<hr>
+				<div class="form-group">
+
+					<div class="col-sm-9">
+						<div class="input-group" ng-show="inference">
+							<span class="input-group-addon">Inference Rules (optional)</span>
+							<input type="text" class="form-control" data-ng-model="rules"
+								placeholder="[rule1:  (?x rdfs:subClassOf ?y), (?a rdf:type ?x) -> (?a rdf:type ?y)] [rule2: ... ]">
+						</div>
+					</div>
+					<span class="control-label col-sm-3"><input type="checkbox"
+						value="" data-ng-model="inference"> Inference</span>
+				</div>
+				<div
+					data-ng-repeat="ns in namespacesContainer| filter:{checked:true}">
+					<samp>PREFIX {{ns.prefix}}: &lt;{{ns.uri}}&gt;</samp>
+				</div>
+				<div class="form-group">
+					<textarea class="form-control input-xlarge"
+						placeholder="Write your query here" data-ng-model="formSPARQL"
+						rows="16" cols="60" required></textarea>
+				</div>
+				<div class="form-actions">
+					<button class="btn btn-primary" data-ng-click="getData()"
+						ng-disabled="spinner">Get data</button>
+					<i class="fa fa-refresh fa-spin" ng-show="spinner"></i> <span
+						ng-show="showQueryTime">(in {{queryTime}} ms)</span>
+				</div>
+			</form>
+			<h2 class="sub-header" data-ng-show="queryResults.length != 0">Query
+				results:</h2>
+			<h2 class="sub-header" data-ng-show="noResults">No results.</h2>
+			<div class="table-responsive" data-ng-show="queryResults.length != 0">
+				<table class="table table-striped">
+					<thead>
+						<tr>
+							<th data-ng-repeat="(key, val) in queryResults[0]">{{key}}</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr data-ng-repeat="result in queryResults">
+							<td data-ng-repeat="obj in result"
+								data-ng-switch="obj.type == 'uri'"><span
+								data-ng-switch-when="true"> <a data-ng-show="!obj.prefix"
+									data-ng-href="{{obj.value}}">{{obj.value}}</a> <a
+									data-ng-show="obj.prefix"
+									data-ng-href="#resource/{{dataset}}/{{obj.prefix}}/{{obj.resource}}">{{obj.prefix}}:{{obj.resource}}</a>
+									<a data-ng-show="obj.prefix" href="{{obj.value}}"
+									title="{{obj.value}}"><i class="fa fa-external-link"></i></a>
+							</span> <span data-ng-switch-when="false"> {{obj.value}} </span></td>
+						</tr>
+					</tbody>
+				</table>
 			</div>
-		</form>
-		<h2 class="sub-header" data-ng-show="queryResults.length != 0">Query
-			results: </h2>
-                <h2 class="sub-header" data-ng-show="noResults">No
-			results.</h2>
-		<div class="table-responsive" data-ng-show="queryResults.length != 0">
-			<table class="table table-striped"
-				>
-				<thead>
-					<tr>
-						<th data-ng-repeat="(key, val) in queryResults[0]">
-							{{key}}</th>
-					</tr>
-				</thead>
-				<tbody>
-					<tr data-ng-repeat="result in queryResults">
-						<td data-ng-repeat="obj in result" data-ng-switch="obj.type == 'uri'">
-                                                    <span data-ng-switch-when="true">
-                                                        <a data-ng-show="!obj.prefix" data-ng-href="{{obj.value}}" >{{obj.value}}</a>
-                                                        <a data-ng-show="obj.prefix" data-ng-href="#resource/{{dataset}}/{{obj.prefix}}/{{obj.resource}}" >{{obj.prefix}}:{{obj.resource}}</a>
-                                                         <a data-ng-show="obj.prefix" href="{{obj.value}}" title="{{obj.value}}"><i class="fa fa-external-link"></i></a>
-                                                    </span>
-                                                    <span data-ng-switch-when="false">
-                                                        {{obj.value}}
-                                                    </span>
-						</td>
-					</tr>
-				</tbody>
-			</table>
-
+			<div class="pull-right">
+				View as: <a data-ng-href="{{sparqlRequest}}&format=json"
+					target="_blank">JSON</a> | <a
+					data-ng-href="{{sparqlRequest}}&format=rdf" target="_blank">RDF</a>
+				| <a data-ng-href="{{sparqlRequest}}&format=ttl" target="_blank">TTL</a>
+				| <a data-ng-href="{{sparqlRequest}}&format=csv" target="_blank">CSV</a>
+				| <a data-ng-href="{{sparqlRequest}}&format=text" target="_blank">TEXT</a>
+			</div>
 		</div>
-		<div class="pull-right">View as:
-			<a data-ng-href="{{sparqlRequest}}&format=json" target="_blank">JSON</a> |
-			<a data-ng-href="{{sparqlRequest}}&format=rdf" target="_blank">RDF</a> |
-			<a data-ng-href="{{sparqlRequest}}&format=ttl" target="_blank">TTL</a> |
-			<a data-ng-href="{{sparqlRequest}}&format=csv" target="_blank">CSV</a> |
-			<a data-ng-href="{{sparqlRequest}}&format=text" target="_blank">TEXT</a>
-		</div>
-
 	</div>
- </div><!-- /.col-lg-12 -->
+	<!-- /.col-lg-12 -->
 </div>
 <!-- /.row -->

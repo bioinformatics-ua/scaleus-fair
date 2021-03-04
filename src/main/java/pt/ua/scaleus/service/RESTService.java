@@ -33,6 +33,7 @@ import com.google.common.base.Charsets;
 import com.google.common.io.CharStreams;
 import pt.ua.scaleus.api.API;
 import pt.ua.scaleus.api.Init;
+import pt.ua.scaleus.kbqa.KBQA;
 import pt.ua.scaleus.metadata.Catalog;
 import pt.ua.scaleus.metadata.CatalogParser;
 import pt.ua.scaleus.metadata.Dataset;
@@ -231,7 +232,16 @@ public class RESTService implements IService {
 			@DefaultValue("xml") @QueryParam("format") String format) {
 		try {
 			log.info(query);
-			String resp = api.select(dataset, query, inf, rules, format);
+			String resp;
+			if(query.contains("SELECT") || query.contains("CONSTRUCT") || query.contains("ASK") || query.contains("DESCRIBE")) {
+				resp = api.select(dataset, query, inf, rules, format);
+			} else {
+				//new JsonResponse<>(Status.OK, "", p).build();
+				resp = new KBQA().getKbqaData(query);
+			}
+			//log.info(query);
+			//String resp = api.select(dataset, query, inf, rules, format);
+			System.out.println("resp = " + resp);
 			return Response.status(Response.Status.OK).entity(resp).build();
 		} catch (Exception ex) {
 			log.error("Service failed", ex);
