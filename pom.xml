@@ -14,7 +14,7 @@
 		<javax.servlet.version>2.5</javax.servlet.version>
 		<jsr305.version>3.0.2</jsr305.version>
 		<log4j.version>1.2.17</log4j.version>
-		<logging_log4j.version>2.12.1</logging_log4j.version>
+		<logging_log4j.version>2.15.0</logging_log4j.version>
 		<rdf4j.version>2.4.2</rdf4j.version>
 		<springdata.version>3.1.4.RELEASE</springdata.version>
 	</properties>
